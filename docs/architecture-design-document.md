@@ -49,31 +49,7 @@ Voice Call → Speech-to-Text → Conversation AI → Business Logic → Calenda
 
 The AppointmentScheduler system operates within an ecosystem of external systems and users:
 
-```plantuml
-@startuml C4_Context
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
-
-title System Context Diagram - AppointmentScheduler
-
-Person(customer, "End Customer", "Calls to book appointments")
-Person(business_owner, "Business Owner", "Configures and manages the system")
-
-System(appointment_scheduler, "AppointmentScheduler", "AI-powered voice appointment scheduling system")
-
-System_Ext(google_calendar, "Google Calendar", "Calendar integration for appointment management")
-System_Ext(twilio, "Twilio", "Voice and SMS communication infrastructure")
-System_Ext(openai, "OpenAI", "Whisper (Speech-to-Text) and GPT-4 (Conversation AI)")
-System_Ext(elevenlabs, "ElevenLabs", "Text-to-Speech for natural voice responses")
-
-Rel(customer, appointment_scheduler, "Makes voice calls", "Phone/Voice")
-Rel(business_owner, appointment_scheduler, "Configures system", "HTTPS/Web")
-Rel(appointment_scheduler, google_calendar, "Syncs appointments", "HTTPS/API")
-Rel(appointment_scheduler, twilio, "Handles calls & sends SMS", "HTTPS/API")
-Rel(appointment_scheduler, openai, "Processes voice & conversation", "HTTPS/API")
-Rel(appointment_scheduler, elevenlabs, "Generates voice responses", "HTTPS/API")
-
-@enduml
-```
+![System Context Diagram - AppointmentScheduler](https://www.plantuml.com/plantuml/png/bPHlQzim4CRV-rFSFDQbCDSmCXWb2_MohWaqrCpP-ZB8yiKMbIKZoKq3_V0xEMx-jEkWVYMTVRyxFSzP5zOnuzfQmcIud6ZbyC45xuJYiYqGAkSQUnx7XgtFIk6gDcyj6ku_K-wCwpfk95C-FRAka2AF9yCezQ7Vy-kuPjQXYVVWiuQ-308dd4J8DlIsXluL_12iDAo629AcqKAvcafalCAYbMY284LZjHhmrZfTe_a4uQKgOD9lGzfFc9GMd8PSwpjWUueDJv_IgN-XqDgbNgiEyhqFm8qFT1YjLg9i3LfWLA5cYfMqTXM2xLecMh1jVd1GP6cVUYN6luxWsSaiQlGQ3HPmhmN7mowX1mXLlYYql7nmWrBhKkAICucgOBxCLHU1IH_fHUZMG5GaGPtG2bRQ75NQdialgSH11RSMKcYYBBg5v_tPjab2PFCCoF6wLO9liKAj35biMkv8hcEKRb0nGO0RMYGpZxgjX6tGm21h47aLEHqjoFdJZdwLBg8X34ZyUt9goqzcfyTGb7YFIhBSUlkxpJLjFDoJF77Bxawi6BN5PAyq-TbePT4FG_0BvS4alURYdDsHyTjqxeVB5qehhJ3kP26I1psVgTTm1uFL-ql1wMAHPl4jvZtibUINtcSRnUtnbEzmIJhxFsvdz9IqbzHGTpmu0Kjuwwr-0sndTMeq9nrscftGlEpjV0FnoESh95MPsr7tHZu3qlCHag8WypNTEpHMIhkkTD17HlbujABxXlgIsdmBtmy_V_toSnYEdseKa6_W8ZTCABeN-Tt-UgjvCufzxdWKvsDuX6DGqZtX-4D1b46ueIUQpoDgPZezh-bFxfE32nAOU7y1)
 
 **Primary Users:**
 - **Business Customers** - Small business owners who configure and manage the system
@@ -108,51 +84,7 @@ Rel(appointment_scheduler, elevenlabs, "Generates voice responses", "HTTPS/API")
 
 The system is composed of several containerized services that work together to deliver the complete voice appointment scheduling experience:
 
-```plantuml
-@startuml C4_Container
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-
-title Container Diagram - AppointmentScheduler
-
-Person(customer, "End Customer")
-Person(business_owner, "Business Owner")
-
-System_Boundary(c1, "AppointmentScheduler") {
-    Container(web_app, "Web Dashboard", "React, TypeScript", "Business owner interface for configuration and monitoring")
-    Container(api_gateway, "API Gateway", "Express.js, Node.js", "Request routing, authentication, and rate limiting")
-    Container(voice_service, "Voice Processing Service", "Node.js, TypeScript", "Handles speech-to-text, conversation AI, and text-to-speech")
-    Container(appointment_service, "Appointment Management Service", "Node.js, TypeScript", "Core business logic for appointment operations")
-    Container(customer_service, "Customer Management Service", "Node.js, TypeScript", "Customer data and profile management")
-    Container(business_service, "Business Configuration Service", "Node.js, TypeScript", "Business settings and rules management")
-    Container(integration_service, "Integration Gateway", "Node.js, TypeScript", "External API integrations and orchestration")
-    ContainerDb(database, "PostgreSQL Database", "PostgreSQL 14+", "Primary data storage for all business data")
-    ContainerDb(cache, "Redis Cache", "Redis 7+", "Session management and performance optimization")
-    Container(message_queue, "Message Queue", "Redis Pub/Sub", "Asynchronous event processing")
-}
-
-System_Ext(google_calendar, "Google Calendar")
-System_Ext(twilio, "Twilio")
-System_Ext(openai, "OpenAI")
-System_Ext(elevenlabs, "ElevenLabs")
-
-Rel(customer, voice_service, "Makes voice calls", "Phone/Voice")
-Rel(business_owner, web_app, "Configures system", "HTTPS")
-Rel(web_app, api_gateway, "API calls", "HTTPS/JSON")
-Rel(api_gateway, appointment_service, "Routes requests", "HTTPS/JSON")
-Rel(api_gateway, customer_service, "Routes requests", "HTTPS/JSON")
-Rel(api_gateway, business_service, "Routes requests", "HTTPS/JSON")
-Rel(voice_service, appointment_service, "Booking requests", "HTTPS/JSON")
-Rel(appointment_service, database, "Reads/Writes", "SQL")
-Rel(customer_service, database, "Reads/Writes", "SQL")
-Rel(business_service, database, "Reads/Writes", "SQL")
-Rel(voice_service, cache, "Session data", "Redis Protocol")
-Rel(integration_service, google_calendar, "Calendar sync", "HTTPS/API")
-Rel(integration_service, twilio, "Voice/SMS", "HTTPS/API")
-Rel(voice_service, openai, "AI processing", "HTTPS/API")
-Rel(voice_service, elevenlabs, "Voice synthesis", "HTTPS/API")
-
-@enduml
-```
+![Container Diagram - AppointmentScheduler](https://www.plantuml.com/plantuml/png/bLPXS-8s4FtEhr3TwPHC8PxhSDFEJSg4a3IX4ouaJdiV6TaMHeqikP8SGg_zxtsImHXmBpb_mLhjxdjQxLjpRYpLjim56G_cOoKjvPBfpZTS9g9C6LbQMvWFOQZfwZJZTbd6fM4wWIEJzZHHULW8Abs2lh6fu74u7lHdplJxz3RCgR5CXytKfmLyEntBhM2ajf9BJZDDSz8dew9GNDeS-QDaoT9IW4zdnhHHifkKnggSwHu9hcHAnfjbSB9r03taCsQkLjAxNMmCvCuPuDY9rY2LpozKALEgrzta7TpQK8CJyhb3yDGqkoiMpsbH8E0JYyabDSjOKPq6C3mmcjWUULmNB4eqBspGHFTq212ONj24aONI15LSyApKr78b2SLvSYMvLPhB34JtaMd1vncrR4NNZkviGgwhbOEvUYaqK4x_D3toKQKCBnMblqfcBD6gjCZP8xIqIvoG9nwovp41puZWERTjiC-A9soEAt_6BrB-uTPafbK2F0IGgDfoS1lamnhS04KmGqp1MBBiMzMtx0MLml6VSMdLwKUJYetRSYwLSqiLwcjga6fS7fbIIJFcNr-dDbQQaMtB4A4odlYRQS0GLR3gXimHcsqtDgXiE_8hUMoZKcgfhqEXrO938NcTvWYzRlKTUjrkuxtMUfr07MYOTNrWgjOetRrzWOBhvwm2QR2OxApD9lqVwAiNQ49IGLnFDn9M59I66esjJ8Vubt7N5Iocni7EbB6PPj7zBOHPMODzyxl13zwYUGxXLyL6uJMELrsx4BjkSBijW0a58Q-jbAFERXNKovzy_iX90sVV5QwwKaXVQHWX85LOAExlrbDrSyGZS0xnbWvgMgt9lLllm6Pb74Pbx0mZivR9KYkfIaFOiqCiQeaY_x_rr4ErkvbIcM3pX0hc9Y3Yhxq5fwaiY6YusnKNNC7hqR_iRq8Tad9itk5bDDdVPC9n4JGsxfxzuXOBDuGVc6WCyyCfCwLFQ3nl9Q0f_3IRBPLaeHz0oE0I70xxtNJUzhyREvwF7qIFZxDe4rgx7i_L6j3xXxz5TnytGNk-xQFe0QCMeBgQl6z8qp93lZf7ooHuIuw3ghSVw4Af9pVdNs7J4jgG9hwDgGa_QGvENY7tjvl8u-E_AUpun6yAEpZnLijRmNh9x_IbbLM94flOrbbtBAMjXeYJvAvOQAmlvQarvjixZAPHM-W1_LfxeqbJxgy7xkco-gA3BVuQ66uEm_5yJqPfYW6fCAWnoQIoddrdOpcBXsSB32zyq8NIlmJV3dxy-VslWs1upQJxTBAKn6jo7cjCD_pRJ9vsVndpf3WBNUpmB8o7v1-odsZads3u7Iw6TOCrdlvqsWUPcviFUHwSR88xvoWvylq7)
 
 **Core Application Containers:**
 1. **Voice Processing Service** - Handles speech-to-text, conversation AI, and text-to-speech
@@ -193,45 +125,7 @@ Rel(voice_service, elevenlabs, "Voice synthesis", "HTTPS/API")
 
 ### 4.1 Voice Processing Service Components
 
-```plantuml
-@startuml C4_Component_Voice
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-
-title Component Diagram - Voice Processing Service
-
-Container(voice_service, "Voice Processing Service", "Node.js, TypeScript")
-
-System_Boundary(voice_boundary, "Voice Processing Service") {
-    Component(call_handler, "Call Handler", "Express.js Controller", "Manages incoming voice calls and routing")
-    Component(speech_recognition, "Speech Recognition", "OpenAI Whisper Integration", "Converts voice to text with real-time processing")
-    Component(conversation_ai, "Conversation AI", "GPT-4 Integration", "Processes natural language and generates responses")
-    Component(voice_synthesis, "Voice Synthesis", "ElevenLabs Integration", "Converts text responses to natural voice")
-    Component(session_manager, "Session Manager", "Redis Integration", "Manages conversation state and context")
-    Component(audio_processor, "Audio Processor", "WebRTC/Audio Utils", "Handles audio streaming and quality optimization")
-}
-
-System_Ext(twilio, "Twilio Voice API")
-System_Ext(openai, "OpenAI APIs")
-System_Ext(elevenlabs, "ElevenLabs API")
-ContainerDb(redis, "Redis Cache")
-Container(appointment_service, "Appointment Management Service")
-
-Rel(twilio, call_handler, "Voice calls", "WebRTC/SIP")
-Rel(call_handler, audio_processor, "Audio stream", "Binary")
-Rel(audio_processor, speech_recognition, "Audio data", "Binary")
-Rel(speech_recognition, openai, "Audio to text", "HTTPS/API")
-Rel(speech_recognition, conversation_ai, "Text input", "JSON")
-Rel(conversation_ai, openai, "Conversation processing", "HTTPS/API")
-Rel(conversation_ai, appointment_service, "Booking requests", "HTTPS/JSON")
-Rel(conversation_ai, voice_synthesis, "Response text", "JSON")
-Rel(voice_synthesis, elevenlabs, "Text to speech", "HTTPS/API")
-Rel(voice_synthesis, audio_processor, "Audio response", "Binary")
-Rel(audio_processor, call_handler, "Voice output", "Binary")
-Rel(session_manager, redis, "Session data", "Redis Protocol")
-Rel(conversation_ai, session_manager, "Context management", "JSON")
-
-@enduml
-```
+![Component Diagram - Voice Processing Service](https://www.plantuml.com/plantuml/png/XLPjZzf64FxkNp6bYif9uInLHAgYApgEf3cYN88mIJwYjJs1JTQxpkxwxaZR_zxP5niuG-fFC9vvPkPvPWQkZMNQDfM0sNWzKrMj94gx_gHuWSalN1QYAH6srjRcPPfgzd2vuNRRv8r1NIXfoVcoK5LQ2oOTpCZOKl0ydOr72sVwUFSkhPYngDF319Sr-IQ9vLOWT5PunTb6imf6u0k0XLO56iFb1ZBKzwwcP4PP6PUeX_VEPst2Y-SmE1Spe7VlLOcNNyrpMErgp0hDQpkuI99iHwLLwnlLo9BfNOJCuzUVOLx0tmdGqnK_B9WGwosJfK1DaJFw2hVXgwlWzMEj2OEA0DU2LYA-k6EIRT00aQqgby8N0GxE0CM3LeqbEzLxdD3KYCLshR5G6yajLvBGCc-4vTxeSdoeKKxdy7dBAKZ3d8GZejktLCyzQcjYPgl0ugE51r8QD38nihn2g3iIUfKK7i1um3NZ7MImm7JkihnPh4RZfwaZizI-PBRHJ01DpQOXGdph6oIXcQNNn1qb8yTUyZW6EsctQBZfHCjQYsTVu3tATomtPvltFNTf70jjIJv3dtv71lLRUVsSv5cmG53KYxl4alTIjeeVqWQqY3OqxVVgqVOIigRaQXrbK2xXr5dQwLG-uMVCbwjP6jvyj5puziCSqZXvix6agXyrb-vxmmItEr0roSn_X2elad-xxNZzQ8VsWGkk26dbFyJzd2xcv7dWfcZElFvnuCZ177kW5qAG4CUg1AXkkL_bG-sewoYSiMABXnv3LjUAIrkvUxK_0jEzDUhWFtPhcoHB55qxJtRsqtxp3hZCvWkASs77xkVq2FGwW1ikwOp4u9xxoVqD42Mph0TmohyZFCJ5rVMIhrQBB0sqdelkx-tABG6NTUCntcOVthUjFtNjCX-j-i6HE5533-IqXZTAVNFJgV5xWyQQFTJF2khVWMLSvewJW_2Uzz5WUXg8p43QgLPwyUUceRqe_pyF9uUHRdyKutWMdXwVTblQ6zHEKDWUEX5M5KgSuwv_osRX247LxT01WVJy1jEoX2zAqKyxdH6fh4TBekKgdrnz8GWQCQ7qduDVnx__yUAlyM3o9bxq4l8TNEUQTfakN_5j_m-YAkghrCLEhj9y0l_0CT3KFuF9C-eGXuCTFQExkn4LStlxige65p4ukKPPqX-R_m00)
 
 **Speech Recognition Component:**
 - Integrates with OpenAI Whisper API
